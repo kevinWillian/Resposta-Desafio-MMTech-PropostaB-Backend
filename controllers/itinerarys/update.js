@@ -1,9 +1,9 @@
 import db from '../../configs/database.js';
 import Ajv from 'ajv';
 
-const findInvId = (position) => {
+const findInvId = (position, _travel_id) => {
     return new Promise((resolve, reject) => {
-        db.itinerary.find({position: position}).exec((err, res) =>{
+        db.itinerary.find({travel_id: _travel_id, position: position}).exec((err, res) =>{
             if(!err){
                 resolve(res[0]._id);
             }else{
@@ -34,9 +34,10 @@ export default async (req, res) => {
             _id: {type: "string"},
             address: {type: "string"},
             stay: {type: "integer"},
-            position: {type: "integer"}
+            position: {type: "integer"},
+            travel_id: {type: "string"}
         },
-        required: ["_id"],
+        required: ["_id", "travel_id"],
         additionalProperties: false
     }
 
@@ -64,7 +65,7 @@ export default async (req, res) => {
 
     if(req.body.position){
         let isUpPos = false;
-        invId = await findInvId(req.body.position);
+        invId = await findInvId(req.body.position, req.body.travel_id);
         oriPos = await findOriPos(req.body._id);
     }
     try {
